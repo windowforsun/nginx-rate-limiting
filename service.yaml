@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rate-limiting-service
+spec:
+  type: NodePort
+  selector:
+    type: rate-limiting
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 32222

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: rate-limit-exam-conf
+  name: basic-configmap
   namespace: default
 data:
   nginx.conf: |
@@ -25,35 +25,17 @@ data:
 
         access_log  /var/log/nginx/access.log  main;
 
-        #sendfile        on;
-        #tcp_nopush     on;
-        #keepalive_timeout  65;
-        #gzip  on;
-        #include /etc/nginx/conf.d/*.conf;
-
-        limit_req_zone $binary_remote_addr zone=test:10m rate=100r/s;
+        limit_req_zone $binary_remote_addr zone=mylimit:10m rate=100r/s;
 
         server {
             listen 80;
             server_name localhost;
+
             location /status {
-                limit_req_status    400;
-                #limit_req zone=test burst=100;
-                limit_req zone=test burst=100 nodelay;
+                limit_req zone=mylimit;
                 stub_status on;
                 allow all;
                 deny all;
             }
-
-            #location /sleep {
-            #    #content_by_lua 'os.execute("/tmp/sleep.sh")';
-            #    content_by_lua_block {
-            #        os.exec("bash /tmp/sleep.sh");
-            #    }
-            #}
         }
     }
-  sleep.sh: |
-    #!/bin/bash
-
-    sleep 0.5
