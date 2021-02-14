@@ -32,7 +32,7 @@ data:
             server_name localhost;
 
             location /status {
-                limit_req zone=mylimit burst=50 delay=150;
+                limit_req zone=mylimit burst=100 delay=50;
                 stub_status on;
                 allow all;
                 deny all;
