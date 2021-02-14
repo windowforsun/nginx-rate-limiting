@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: delay-configmap
+  namespace: default
+data:
+  nginx.conf: |
+    user  nginx;
+    worker_processes  2;
+
+    error_log  /var/log/nginx/error.log warn;
+    pid        /var/run/nginx.pid;
+
+    events {
+        worker_connections  1024;
+    }
+
+    http {
+        include       /etc/nginx/mime.types;
+        default_type  application/octet-stream;
+
+        log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                          '$status $body_bytes_sent "$http_referer" '
+                          '"$http_user_agent" "$http_x_forwarded_for"';
+
+        access_log  /var/log/nginx/access.log  main;
+
+        limit_req_zone $binary_remote_addr zone=mylimit:10m rate=100r/s;
+
+        server {
+            listen 80;
+            server_name localhost;
+
+            location /status {
+                limit_req zone=mylimit burst=50 delay=150;
+                stub_status on;
+                allow all;
+                deny all;
+            }
+        }
+    }

@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: delay-rate-limiting
+  labels:
+    app: delay-rate-limiting
+    type: rate-limiting
+spec:
+  containers:
+    - name: delay-rate-limiting
+      image: nginx:1.19
+      ports:
+        - containerPort: 80
+      volumeMounts:
+        - name: nginx-conf
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+          readOnly: true
+  volumes:
+    - name: nginx-conf
+      configMap:
+        name: delay-configmap
+        items:
+          - key: nginx.conf
+            path: nginx.conf
+
